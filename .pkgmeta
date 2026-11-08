@@ -1,0 +1,6 @@
+package-as: MutePets
+
+ignore:
+  - assets
+  - README_ES.md
+  - .gitignore

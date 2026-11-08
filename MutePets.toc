@@ -1,0 +1,13 @@
+## Interface: 16001
+## Title: MutePets
+## Notes: Mutes pet sounds (warlock, hunter) by pet and by sound type. Options in Options > AddOns > MutePets.
+## Notes-esES: Silencia los sonidos de los pets (brujo, cazador) por tipo de pet y de sonido. Opciones en Opciones > AddOns > MutePets.
+## Notes-esMX: Silencia los sonidos de los pets (brujo, cazador) por tipo de pet y de sonido. Opciones en Opciones > AddOns > MutePets.
+## Author: Felipe
+## Version: 0.1
+## IconTexture: Interface/AddOns/MutePets/icon.png
+## SavedVariables: MutePetsDB
+
+Locales.lua
+Data.lua
+MutePets.lua
