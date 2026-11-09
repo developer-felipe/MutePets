@@ -4,10 +4,12 @@
 ## Notes-esES: Silencia los sonidos de los pets (brujo, cazador) por tipo de pet y de sonido. Opciones en Opciones > AddOns > MutePets.
 ## Notes-esMX: Silencia los sonidos de los pets (brujo, cazador) por tipo de pet y de sonido. Opciones en Opciones > AddOns > MutePets.
 ## Author: Felipe
-## Version: 0.1
+## Version: 0.2.0
 ## IconTexture: Interface/AddOns/MutePets/icon.png
 ## SavedVariables: MutePetsDB
 
-Locales.lua
+Locales/Core.lua
+Locales/enUS.lua
+Locales/esES.lua
 Data.lua
 MutePets.lua

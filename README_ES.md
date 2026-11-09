@@ -2,7 +2,7 @@
 
 ![WoW Forever](https://img.shields.io/badge/WoW-Forever-c79c6e)
 ![Interface](https://img.shields.io/badge/interface-16001-blue)
-![Version](https://img.shields.io/badge/version-0.1-brightgreen)
+![Version](https://img.shields.io/badge/version-0.2.0-brightgreen)
 
 MutePets silencia los sonidos de los pets en WoW Forever (brujo y cazador): todos a la vez, o solo los que elijas, e incluso solo ciertos tipos de sonido (ataques, heridas, voces...). Pensado para quien no quiere oír al Diablillo, al Abisario o al Guardia vil durante horas.
 
@@ -54,6 +54,8 @@ World of Warcraft/_forever_/Interface/AddOns/MutePets/
 | `/mp` or `/mutepets` | Abre el panel de opciones                     |
 | `/mp on`             | Silencia todos los pets                       |
 | `/mp off`            | Reactiva todos los pets                       |
+| `/mp lang <código>` | Fuerza un idioma, por ejemplo `/mp lang en` o `/mp lang es` (recarga la interfaz) |
+| `/mp lang auto`    | Vuelve al idioma del juego (recarga la interfaz) |
 
 El panel también está en Opciones > AddOns > MutePets.
 
@@ -66,6 +68,7 @@ El panel también está en Opciones > AddOns > MutePets.
 ## Contribution
 Las contribuciones son bienvenidas: abre un Pull Request en GitHub.
 
+**¿Quieres agregar tu idioma?** Solo necesitas un archivo de texto pequeño, sin programar. Mira la guía paso a paso en [CONTRIBUTING.md](CONTRIBUTING.md) (en inglés).
+
 - `Data.lua` contiene los FileDataIDs agrupados por pet y por tipo de sonido. Se generó a partir del [community listfile de WoW](https://github.com/wowdev/wow-listfile).
 - Para agregar un grupo nuevo, añade una entrada en `ns.GROUPS` con sus `cats` (`aggro`, `attack`, `wound`, `death`, `voice`, `other`).
-- Para añadir un idioma, agrega un bloque a la tabla `overrides` de `Locales.lua`. El inglés se usa para lo que no esté traducido.

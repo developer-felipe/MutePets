@@ -285,8 +285,66 @@ local function BuildPanel()
     sub:SetWordWrap(true)
     sub:SetText(L.SUBTITLE)
 
+    -- Language selector: Auto + one button per registered language.
+    -- Changing it reloads the UI so every text is rebuilt in the new language.
+    local choices = { { code = nil, name = L.LANG_AUTO } }
+    for _, c in ipairs(ns.LanguageChoices()) do choices[#choices + 1] = c end
+    local current = db.lang and ns.ResolveLocale(db.lang)
+    local function IsCurrent(c)
+        if c.code == nil then return current == nil end
+        return current ~= nil and ns.LOCALES[current] == ns.LOCALES[c.code]
+    end
+    local function CurrentName()
+        for _, c in ipairs(choices) do if IsCurrent(c) then return c.name end end
+        return L.LANG_AUTO
+    end
+
+    local langLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    langLabel:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -170, -78)
+    langLabel:SetText(L.LANGUAGE)
+
+    local dd = CreateFrame("Frame", "MutePetsLangDropdown", panel, "UIDropDownMenuTemplate")
+    dd:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -4, -70)
+    UIDropDownMenu_SetWidth(dd, 120)
+    UIDropDownMenu_SetText(dd, CurrentName())
+    -- Switch language live (no ReloadUI): retranslate the texts and rebuild the rows
+    local function ApplyLanguage(code)
+        db.lang = code
+        current = code and ns.ResolveLocale(code) or nil
+        ns.SetLocale(current or GetLocale())
+        title:SetText(L.TITLE)
+        sub:SetText(L.SUBTITLE)
+        langLabel:SetText(L.LANGUAGE)
+        choices[1].name = L.LANG_AUTO
+        UIDropDownMenu_SetText(dd, CurrentName())
+        if rows.master then
+            local scroll = content:GetParent()
+            content:Hide()
+            wipe(rows)
+            wipe(headers)
+            content = CreateFrame("Frame", nil, scroll)
+            content:SetSize(560, 600)
+            scroll:SetScrollChild(content)
+            BuildRows()
+            Refresh()
+        end
+    end
+    UIDropDownMenu_Initialize(dd, function()
+        for _, c in ipairs(choices) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = c.name
+            info.checked = IsCurrent(c)
+            info.minWidth = 120 -- same width as the select button
+            info.func = function()
+                CloseDropDownMenus()
+                if not IsCurrent(c) then ApplyLanguage(c.code) end
+            end
+            UIDropDownMenu_AddButton(info)
+        end
+    end)
+
     local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
-    scroll:SetPoint("TOPLEFT", 16, -86)
+    scroll:SetPoint("TOPLEFT", 16, -104)
     scroll:SetPoint("BOTTOMRIGHT", -36, 16)
     content = CreateFrame("Frame", nil, scroll)
     content:SetSize(560, 600)
@@ -319,6 +377,8 @@ f:SetScript("OnEvent", function()
     MutePetsDB = MutePetsDB or {}
     MutePetsDB.muted = MutePetsDB.muted or {}
     db = MutePetsDB
+    -- Language: the one saved with /mp lang, otherwise the game client language
+    ns.SetLocale(ns.ResolveLocale(db.lang) or GetLocale())
     ApplyAll()
     BuildPanel()
 end)
@@ -327,7 +387,21 @@ SLASH_MUTEPETS1 = "/mp"
 SLASH_MUTEPETS2 = "/mutepets"
 SlashCmdList.MUTEPETS = function(msg)
     msg = (msg or ""):lower():match("^%s*(.-)%s*$")
-    if msg == "on" or msg == "off" then
+    local lang = msg:match("^lang%s*(%a*)$")
+    if lang then
+        if lang == "auto" then
+            db.lang = nil
+        else
+            local code = ns.ResolveLocale(lang)
+            if not code then
+                print("|cff33ff99MutePets|r: /mp lang auto | " .. table.concat(ns.LocaleList(), " | "))
+                return
+            end
+            db.lang = code
+        end
+        print("|cff33ff99MutePets|r: reloading UI...")
+        ReloadUI()
+    elseif msg == "on" or msg == "off" then
         for _, g in ipairs(ns.GROUPS) do SetGroup(g, msg == "on") end
         if rows.master and panel:IsVisible() then Refresh() end
         print("|cff33ff99MutePets|r:", msg == "on" and L.ALL_MUTED or L.ALL_UNMUTED)

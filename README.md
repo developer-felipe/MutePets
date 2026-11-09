@@ -2,7 +2,7 @@
 
 ![WoW Forever](https://img.shields.io/badge/WoW-Forever-c79c6e)
 ![Interface](https://img.shields.io/badge/interface-16001-blue)
-![Version](https://img.shields.io/badge/version-0.1-brightgreen)
+![Version](https://img.shields.io/badge/version-0.2.0-brightgreen)
 
 MutePets mutes pet sounds in WoW Forever (warlock and hunter): all of them at once, only the pets you pick, or even just certain sound types (attacks, wounds, voices...). Made for anyone who doesn't want to hear the Imp, Voidwalker or Felguard for hours.
 
@@ -54,6 +54,8 @@ World of Warcraft/_forever_/Interface/AddOns/MutePets/
 | `/mp` or `/mutepets` | Open the options panel       |
 | `/mp on`             | Mute all pets                |
 | `/mp off`            | Unmute all pets              |
+| `/mp lang <code>`   | Force a language, for example `/mp lang en` or `/mp lang es` (reloads the UI) |
+| `/mp lang auto`    | Follow the game language again (reloads the UI) |
 
 The panel is also available under Options > AddOns > MutePets.
 
@@ -66,6 +68,7 @@ The panel is also available under Options > AddOns > MutePets.
 ## Contribution
 Contributions are welcome: open a Pull Request on GitHub.
 
+**Want to add your language?** It only takes a small text file and no programming. See [CONTRIBUTING.md](CONTRIBUTING.md) for the step-by-step guide.
+
 - `Data.lua` holds the FileDataIDs grouped by pet and by sound type. It was generated from the [WoW community listfile](https://github.com/wowdev/wow-listfile).
 - To add a new group, add an entry to `ns.GROUPS` with its `cats` (`aggro`, `attack`, `wound`, `death`, `voice`, `other`).
-- To add a language, add a block to the `overrides` table in `Locales.lua`. English is the fallback for anything not translated.

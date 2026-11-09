@@ -1,6 +1,12 @@
 package-as: MutePets
 
 ignore:
-  - assets
+  - .github
+  - CONTRIBUTING.md
   - README_ES.md
   - .gitignore
+  - Locales/_template.lua
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
