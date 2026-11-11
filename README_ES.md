@@ -2,7 +2,7 @@
 
 ![WoW Forever](https://img.shields.io/badge/WoW-Forever-c79c6e)
 ![Interface](https://img.shields.io/badge/interface-16001-blue)
-![Version](https://img.shields.io/badge/version-0.2.0-brightgreen)
+![Version](https://img.shields.io/badge/version-0.3.0-brightgreen)
 
 MutePets silencia los sonidos de los pets en WoW Forever (brujo y cazador): todos a la vez, o solo los que elijas, e incluso solo ciertos tipos de sonido (ataques, heridas, voces...). Pensado para quien no quiere oír al Diablillo, al Abisario o al Guardia vil durante horas.
 
@@ -35,13 +35,14 @@ World of Warcraft/_forever_/Interface/AddOns/MutePets/
 - Silencia **todos** los pets con una sola casilla, o todos los de una clase con la casilla de su encabezado.
 - Los pets están agrupados por clase y colapsados por defecto:
   - **Brujo:** Imp, Voidwalker, Felhunter, Succubus, Incubus, Felguard, Wrathguard, Shivarra, Observer, Voidlord, Infernal y Doomguard.
-  - **Cazador:** Lobo, Oso, Jabalí, Felino, Cangrejo, Gorila, Raptor, Hiena, Búho, Águila, Carroñero, Devastador, Murciélago de esporas, Acechador deformador, Zancaalta, Quimera, Wyvern, Quilen, Zorro, Basilisco, Hidra y Puercoespín.
-- Con un pet silenciado, haz clic en su nombre para ver el **desglose** y elegir qué sonidos callar:
-  - Aggro / grito de combate
+  - **Cazador:** Lobo, Oso, Jabalí, Felino, Cangrejo, Gorila, Raptor, Hiena, Búho, Águila, Carroñero, Devastador, Murciélago de esporas, Acechador deformador, Zancaalta, Quimera, Wyvern, Quilen, Zorro, Basilisco, Hidra, Puercoespín y Araña.
+- Haz clic en el nombre de un pet para ver el **desglose** y elegir qué sonidos callar. Cada tipo de sonido tiene un botón de reproducción para escuchar sus sonidos uno por uno (el fileID de cada uno se registra en el chat):
+  - Grito de combate
   - Ataques
   - Heridas
   - Muerte
   - Voces
+  - Movimiento (donde el juego los tiene como sonidos separados, por ejemplo la Araña)
   - Otros
 - Muestra el estado de cada pet: `(silenciado)` o `(parcial 3/5)`.
 - Guarda tu configuración entre sesiones.

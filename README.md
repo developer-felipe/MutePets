@@ -2,7 +2,7 @@
 
 ![WoW Forever](https://img.shields.io/badge/WoW-Forever-c79c6e)
 ![Interface](https://img.shields.io/badge/interface-16001-blue)
-![Version](https://img.shields.io/badge/version-0.2.0-brightgreen)
+![Version](https://img.shields.io/badge/version-0.3.0-brightgreen)
 
 MutePets mutes pet sounds in WoW Forever (warlock and hunter): all of them at once, only the pets you pick, or even just certain sound types (attacks, wounds, voices...). Made for anyone who doesn't want to hear the Imp, Voidwalker or Felguard for hours.
 
@@ -35,13 +35,14 @@ World of Warcraft/_forever_/Interface/AddOns/MutePets/
 - Mute **all** pets with a single checkbox, or all the pets of one class with its header checkbox.
 - Pets are grouped by class, collapsed by default:
   - **Warlock:** Imp, Voidwalker, Felhunter, Succubus, Incubus, Felguard, Wrathguard, Shivarra, Observer, Voidlord, Infernal and Doomguard.
-  - **Hunter:** Wolf, Bear, Boar, Cat, Crab, Gorilla, Raptor, Hyena, Owl, Eagle, Carrion Bird, Ravager, Sporebat, Warp Stalker, Tallstrider, Chimaera, Wyvern, Quilen, Fox, Basilisk, Hydra and Porcupine.
-- With a pet muted, click its name to open the **breakdown** and choose which sounds to silence:
-  - Aggro / battle cry
+  - **Hunter:** Wolf, Bear, Boar, Cat, Crab, Gorilla, Raptor, Hyena, Owl, Eagle, Carrion Bird, Ravager, Sporebat, Warp Stalker, Tallstrider, Chimaera, Wyvern, Quilen, Fox, Basilisk, Hydra, Porcupine and Spider.
+- Click a pet's name to open the **breakdown** and choose which sounds to silence. Each sound type has a play button to listen to its sounds one by one (the fileID of each is logged in the chat):
+  - Battle cry
   - Attacks
   - Wounds
   - Death
   - Voices
+  - Movement (where the game has them as separate sounds, for example the Spider)
   - Other
 - Shows each pet's state: `(muted)` or `(partial 3/5)`.
 - Saves your settings between sessions.

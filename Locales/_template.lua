@@ -10,18 +10,23 @@ ns.RegisterLocale("xxXX", {
     LANG_NAME = "English", -- your language's own name, shown on the language button
     LANGUAGE = "Language:",
     LANG_AUTO = "Auto",
-    SUBTITLE = "Check a pet to mute it. Once a pet is muted, click its name to see the breakdown by sound type.",
+    DEV_TIP_PLAY = "Play the next sound (its fileID is logged in the chat)",
+    DEV_TIP_RESET = "Right-click: start over",
+    DEV_RESET = "sound list restarted",
+    DEV_WRAPPED = "every sound of this category has been played, starting over",
+    SUBTITLE = "Check a pet to mute it. Click its name to see the breakdown by sound type and listen to each sound with the play button.",
     MUTE_ALL = "Mute ALL pets",
     MUTED = "muted",
     PARTIAL = "partial",
     ALL_MUTED = "all pets muted",
     ALL_UNMUTED = "all pets unmuted",
 
-    cat_aggro = "Aggro / battle cry",
+    cat_aggro = "Battle cry",
     cat_attack = "Attacks",
     cat_wound = "Wounds",
     cat_death = "Death",
     cat_voice = "Voices",
+    cat_movement = "Movement",
     cat_other = "Other",
 
     class_WARLOCK = "Warlock",
@@ -62,4 +67,5 @@ ns.RegisterLocale("xxXX", {
     pet_basilisk = "Basilisk",
     pet_hydra = "Hydra",
     pet_porcupine = "Porcupine",
+    pet_spider = "Spider",
 })

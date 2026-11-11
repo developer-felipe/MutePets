@@ -95,6 +95,52 @@ local function ClassState(class)
     return on, total
 end
 
+---------------------------------------------------------------- sound preview
+-- Plays the sounds of one pet/category one by one, never repeating one until
+-- the whole list has been heard, and logs the fileID of each one in the chat so
+-- it can be found in the listfile. Muted files are unmuted just long enough to
+-- be heard.
+local DEV_REMUTE = 6          -- seconds before a previewed file is muted again
+local devProgress = {}        -- ["imp/wound"] = index of the last sound played
+local devHandle               -- handle of the sound that is playing
+
+local function PlayNext(g, cat)
+    local ids = g.cats[cat]
+    local k = g.key .. "/" .. cat
+    local i = (devProgress[k] or 0) + 1
+    if i > #ids then
+        print("|cff33ff99MutePets|r: " .. L.DEV_WRAPPED)
+        i = 1
+    end
+    devProgress[k] = i
+    local id = ids[i]
+    if devHandle then StopSound(devHandle) end
+    local wasMuted = IsMuted(g.key, cat)
+    if wasMuted then UnmuteSoundFile(id) end
+    local _, handle = PlaySoundFile(id, "SFX")
+    devHandle = handle
+    print(("|cff33ff99MutePets|r: %s / %s - %d/%d - fileID |cffffd100%d|r"):format(
+        PetName(g), L["cat_" .. cat], i, #ids, id))
+    if wasMuted then
+        C_Timer.After(DEV_REMUTE, function()
+            if IsMuted(g.key, cat) then MuteSoundFile(id) end
+        end)
+    end
+end
+
+-- Alphabetical order that ignores case and accents (Á sorts with A, Ñ after N)
+local ACCENTS = {
+    ["á"] = "a", ["é"] = "e", ["í"] = "i", ["ó"] = "o", ["ú"] = "u", ["ü"] = "u",
+    ["à"] = "a", ["è"] = "e", ["ì"] = "i", ["ò"] = "o", ["ù"] = "u",
+    ["â"] = "a", ["ê"] = "e", ["î"] = "i", ["ô"] = "o", ["û"] = "u",
+    ["ã"] = "a", ["õ"] = "o", ["ç"] = "c", ["ñ"] = "n{",
+    ["Á"] = "a", ["É"] = "e", ["Í"] = "i", ["Ó"] = "o", ["Ú"] = "u", ["Ñ"] = "n{",
+}
+local function SortKey(s)
+    s = (s or ""):gsub("[\195][\128-\191]", function(c) return ACCENTS[c] or c end)
+    return s:lower()
+end
+
 local function BuildRows()
     -- Class headers (one checkbox mutes every pet of that class)
     for _, class in ipairs(ns.CLASS_ORDER) do
@@ -137,7 +183,15 @@ local function BuildRows()
     end)
     rows.master = master
 
-    for _, g in ipairs(ns.GROUPS) do
+    -- Alphabetical by class name, then by pet name, in the current language
+    local sorted = {}
+    for i, g in ipairs(ns.GROUPS) do sorted[i] = g end
+    table.sort(sorted, function(a, b)
+        local ca, cb = SortKey(L["class_" .. a.class] or a.class), SortKey(L["class_" .. b.class] or b.class)
+        if ca ~= cb then return ca < cb end
+        return SortKey(PetName(a)) < SortKey(PetName(b))
+    end)
+    for _, g in ipairs(sorted) do
         local r = { g = g, subs = {} }
         r.bg = content:CreateTexture(nil, "BACKGROUND")
         r.bg:SetSize(BAND_W - 16, ROW_H)
@@ -145,7 +199,6 @@ local function BuildRows()
         r.check = NewCheck(content, "", function(self)
             local on, total = GroupState(g)
             SetGroup(g, on == 0)       -- nothing muted -> mute all; otherwise clear
-            if on == 0 then expanded[g.key] = nil end
             Refresh()
         end)
         -- Clickable name area: expands the breakdown only while the pet is muted
@@ -159,10 +212,8 @@ local function BuildRows()
         r.arrow:SetPoint("RIGHT", -10, 0)
         r.btn:SetHighlightTexture("Interface/QuestFrame/UI-QuestTitleHighlight", "ADD")
         r.btn:SetScript("OnClick", function()
-            if GroupState(g) > 0 then
-                expanded[g.key] = not expanded[g.key]
-                Refresh()
-            end
+            expanded[g.key] = not expanded[g.key]
+            Refresh()
         end)
         -- Plate that groups the breakdown checkboxes
         r.plate = CreateFrame("Frame", nil, content, "BackdropTemplate")
@@ -179,8 +230,18 @@ local function BuildRows()
         -- Breakdown checkboxes are only created the first time the plate is opened
         r.buildSubs = function()
             r.subsBuilt = true
+            -- Sound types in alphabetical order, in the current language
+            local order = {}
             for _, cat in ipairs(ns.CATEGORY_ORDER) do
-                if g.cats[cat] then
+                if g.cats[cat] then order[#order + 1] = cat end
+            end
+            -- "Other" is what is left over, so it always goes last
+            table.sort(order, function(a, b)
+                if (a == "other") ~= (b == "other") then return b == "other" end
+                return SortKey(L["cat_" .. a]) < SortKey(L["cat_" .. b])
+            end)
+            for _, cat in ipairs(order) do
+                do
                     local s = NewCheck(r.plate, L["cat_" .. cat] .. " (" .. #g.cats[cat] .. ")", function(self)
                         db.muted[g.key] = db.muted[g.key] or {}
                         db.muted[g.key][cat] = self:GetChecked() or nil
@@ -188,6 +249,30 @@ local function BuildRows()
                         Refresh()
                     end)
                     s.cat = cat
+                    -- Play button: hears the next sound of this category
+                    local p = CreateFrame("Button", nil, r.plate)
+                    p:SetSize(22, 22)
+                    p:SetPoint("LEFT", s, "LEFT", COL_W - 32, 0)
+                    p:SetNormalTexture("Interface/Buttons/UI-SpellbookIcon-NextPage-Up")
+                    p:SetPushedTexture("Interface/Buttons/UI-SpellbookIcon-NextPage-Down")
+                    p:SetHighlightTexture("Interface/Buttons/ButtonHilight-Round", "ADD")
+                    p:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+                    p:SetScript("OnClick", function(_, button)
+                        if button == "RightButton" then
+                            devProgress[g.key .. "/" .. cat] = nil
+                            print("|cff33ff99MutePets|r: " .. L.DEV_RESET)
+                        else
+                            PlayNext(g, cat)
+                        end
+                    end)
+                    p:SetScript("OnEnter", function(self)
+                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                        GameTooltip:SetText(L.DEV_TIP_PLAY)
+                        GameTooltip:AddLine(L.DEV_TIP_RESET, 1, 1, 1)
+                        GameTooltip:Show()
+                    end)
+                    p:SetScript("OnLeave", GameTooltip_Hide)
+                    s.play = p
                     r.subs[#r.subs + 1] = s
                 end
             end
@@ -247,8 +332,8 @@ function Refresh()
         r.check:SetChecked(on > 0)
         local suffix = (on > 0 and on < total) and (" |cff999999(" .. L.PARTIAL .. " " .. on .. "/" .. total .. ")|r") or ""
         r.label:SetText(PetName(g) .. suffix)
-        local open = expanded[g.key] and on > 0
-        SetArrow(r.arrow, on > 0, open)
+        local open = expanded[g.key]
+        SetArrow(r.arrow, true, open)
         y = y - ROW_H
         local plateH = math.ceil(r.subCount / 2) * SUB_H + 16
         if open then
